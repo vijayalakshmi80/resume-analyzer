@@ -1,43 +1,65 @@
 pipeline {
     agent any
 
+    environment {
+        BACKEND_IMAGE = 'resume-backend'
+        FRONTEND_IMAGE = 'resume-frontend'
+    }
+
     stages {
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/your-repo/resume-analyzer.git'
+                git branch: 'main', url: 'https://github.com/vijayalakshmi80/resume-analyzer.git'
             }
         }
 
-        stage('Build Backend Docker') {
+        stage('Clean Old Containers') {
             steps {
-                sh 'docker build -t backend ./backend'
+                bat 'docker rm -f backend || exit 0'
+                bat 'docker rm -f frontend || exit 0'
             }
         }
 
-        stage('Build Frontend Docker') {
+        stage('Clean Old Images') {
             steps {
-                sh 'docker build -t frontend ./frontend'
+                bat 'docker rmi -f %BACKEND_IMAGE% || exit 0'
+                bat 'docker rmi -f %FRONTEND_IMAGE% || exit 0'
             }
         }
 
-        stage('Push Images') {
+        stage('Build Backend') {
             steps {
-                sh '''
-                docker tag backend yourdockerhub/backend:latest
-                docker tag frontend yourdockerhub/frontend:latest
-
-                docker push yourdockerhub/backend:latest
-                docker push yourdockerhub/frontend:latest
-                '''
+                bat 'docker build -t %BACKEND_IMAGE% ./backend'
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Build Frontend') {
             steps {
-                sh '''
-                kubectl apply -f k8s/
-                '''
+                bat 'docker build -t %FRONTEND_IMAGE% ./frontend'
             }
+        }
+
+        stage('Deploy Containers') {
+            steps {
+                bat 'docker run -d -p 5000:5000 --name backend %BACKEND_IMAGE%'
+                bat 'docker run -d -p 3000:80 --name frontend %FRONTEND_IMAGE%'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                bat 'docker ps'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build and Deployment Successful!'
+        }
+        failure {
+            echo '❌ Build Failed! Check logs.'
         }
     }
 }
