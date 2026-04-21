@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Resume Analyzer</title>
+<<<<<<< HEAD
     <style>
         
+=======
+
+    <style>
+>>>>>>> 03ca08b (auto trigger test)
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -81,6 +86,7 @@
 
 <div class="card">
     <h2>Resume Analyzer</h2>
+<<<<<<< HEAD
 
     <input type="file" id="resume">
 
@@ -116,5 +122,41 @@ function analyze() {
 </script>
 
     
+=======
+
+    <input type="file" id="resume">
+
+    <textarea id="job" rows="4" placeholder="Enter Job Description..."></textarea>
+
+    <button onclick="analyze()">Analyze Resume</button>
+
+    <div class="result">
+        <h3>Match Score</h3>
+
+        <div class="score-bar">
+            <div class="score-fill" id="scoreFill">0%</div>
+        </div>
+
+        <p id="textResult"></p>
+    </div>
+</div>
+
+<script>
+function analyze() {
+    // Fake score for demo (replace with backend API later)
+    let score = Math.floor(Math.random() * 40) + 60;
+
+    let bar = document.getElementById("scoreFill");
+    bar.style.width = score + "%";
+    bar.innerText = score + "%";
+
+    document.getElementById("textResult").innerText =
+        score > 80 ? "Excellent Match 🎯" :
+        score > 60 ? "Good Match 👍" :
+        "Needs Improvement ⚠️";
+}
+</script>
+
+>>>>>>> 03ca08b (auto trigger test)
 </body>
 </html>
